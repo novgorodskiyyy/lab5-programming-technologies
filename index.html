@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>АИС Ветклиника</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="header">
+    <div class="header-content">
+        <h1 class="logo">🐾 АИС Ветклиника</h1>
+        <nav class="navigation">
+            <a href="#home" class="nav-link">Главная</a>
+            <a href="#patients" class="nav-link">Пациенты</a>
+            <a href="#appointments" class="nav-link">Записи</a>
+            <a href="#services" class="nav-link">Услуги</a>
+            <a href="#reports" class="nav-link">Отчеты</a>
+            <a href="#admin" class="nav-link">Админ</a>
+            <a href="#login" class="nav-link">Войти</a>
+        </nav>
+    </div>
+</header>
+
+<main class="main-content">
+
+    <section id="home" class="page-section">
+        <h2>Добро пожаловать в АИС Ветклиника</h2>
+        <p class="description">Система автоматизации работы ветеринарной клиники. Link to patients list below.</p>
+        <div class="dashboard">
+            <div class="dashboard-card">
+                <h3>📋 Пациенты</h3>
+                <p id="patients-count">Всего пациентов: 3</p>
+                <a href="#patients" class="btn">Перейти к списку</a>
+            </div>
+            <div class="dashboard-card">
+                <h3>📅 Записи на сегодня</h3>
+                <p id="appointments-count">Записей: 2</p>
+                <a href="#appointments" class="btn">Просмотреть</a>
+            </div>
+            <div class="dashboard-card">
+                <h3>💊 Услуги</h3>
+                <p>Доступно услуг: 2</p>
+                <a href="#services" class="btn">Список услуг</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="patients" class="page-section">
+        <h2>Список пациентов</h2>
+        
+        <div class="search-form">
+            <label for="search">Поиск по кличке:</label>
+            <input type="text" id="search" placeholder="Введите кличку..." class="search-input" oninput="filterPatients()">
+            <label for="filter">Фильтр по виду:</label>
+            <select id="filter" class="filter-select" onchange="filterPatients()">
+                <option value="">Все виды</option>
+                <option value="Кошка">Кошка</option>
+                <option value="Собака">Собака</option>
+                <option value="Птица">Птица</option>
+            </select>
+            <button type="button" class="btn btn-secondary" onclick="resetFilter()">Сбросить</button>
+        </div>
+
+        <div class="sort-buttons">
+            <span>Сортировать по:</span>
+            <button type="button" class="btn btn-small" onclick="sortPatients('name')">Кличке (А-Я)</button>
+            <button type="button" class="btn btn-small" onclick="sortPatients('birth')">Дате рождения</button>
+            <button type="button" class="btn btn-small" onclick="sortPatients('owner')">Владельцу</button>
+        </div>
+
+        <div class="data-list" id="patients-list">
+            <article class="list-item" data-name="Барсик" data-type="Кошка" data-birth="2020-03-15" data-owner="Иванов И.И.">
+                <div class="item-info">
+                    <h4>Барсик</h4>
+                    <p>Вид: Кошка | Порода: Британская | Дата рождения: 15.03.2020</p>
+                    <p>Владелец: Иванов И.И. | Телефон: +7 (900) 123-45-67</p>
+                </div>
+                <div class="item-actions">
+                    <button type="button" class="btn btn-small" onclick="editPatient(this)">Редактировать</button>
+                    <button type="button" class="btn btn-danger btn-small" onclick="deletePatient(this)">Удалить</button>
+                </div>
+            </article>
+            <article class="list-item" data-name="Шарик" data-type="Собака" data-birth="2019-07-10" data-owner="Петров П.П.">
+                <div class="item-info">
+                    <h4>Шарик</h4>
+                    <p>Вид: Собака | Порода: Лабрадор | Дата рождения: 10.07.2019</p>
+                    <p>Владелец: Петров П.П. | Телефон: +7 (900) 765-43-21</p>
+                </div>
+                <div class="item-actions">
+                    <button type="button" class="btn btn-small" onclick="editPatient(this)">Редактировать</button>
+                    <button type="button" class="btn btn-danger btn-small" onclick="deletePatient(this)">Удалить</button>
+                </div>
+            </article>
+            <article class="list-item" data-name="Кеша" data-type="Птица" data-birth="2021-12-05" data-owner="Сидоров С.С.">
+                <div class="item-info">
+                    <h4>Кеша</h4>
+                    <p>Вид: Птица | Порода: Попугай | Дата рождения: 05.12.2021</p>
+                    <p>Владелец: Сидоров С.С. | Телефон: +7 (900) 111-22-33</p>
+                </div>
+                <div class="item-actions">
+                    <button type="button" class="btn btn-small" onclick="editPatient(this)">Редактировать</button>
+                    <button type="button" class="btn btn-danger btn-small" onclick="deletePatient(this)">Удалить</button>
+                </div>
+            </article>
+        </div>
+
+        <div class="pagination">
+            <button type="button" class="btn btn-small">← Назад</button>
+            <span>Страница 1 из 1</span>
+            <button type="button" class="btn btn-small">Вперед →</button>
+        </div>
+
+        <a href="#add-patient" class="btn btn-primary">+ Добавить пациента</a>
+    </section>
+
+    <section id="add-patient" class="page-section">
+        <h2>Добавление нового пациента</h2>
+        <p class="description">Заполните все обязательные поля. Button "Сохранить" adds item to the list above.</p>
+        <form class="data-form" id="add-patient-form" onsubmit="addPatient(event)">
+            <div class="form-group">
+                <label for="pet-name">Кличка:</label>
+                <input type="text" id="pet-name" name="pet-name" required>
+            </div>
+            <div class="form-group">
+                <label for="pet-type">Вид:</label>
+                <select id="pet-type" name="pet-type" required>
+                    <option value="">Выберите вид</option>
+                    <option value="Кошка">Кошка</option>
+                    <option value="Собака">Собака</option>
+                    <option value="Птица">Птица</option>
+                    <option value="Другое">Другое</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="pet-breed">Порода:</label>
+                <input type="text" id="pet-breed" name="pet-breed">
+            </div>
+            <div class="form-group">
+                <label for="pet-birth">Дата рождения:</label>
+                <input type="date" id="pet-birth" name="pet-birth">
+            </div>
+            <div class="form-group">
+                <label for="owner-name">Владелец (ФИО):</label>
+                <input type="text" id="owner-name" name="owner-name" required>
+            </div>
+            <div class="form-group">
+                <label for="owner-phone">Телефон владельца:</label>
+                <input type="tel" id="owner-phone" name="owner-phone" required>
+            </div>
+            <div class="form-group">
+                <label for="owner-email">Email владельца:</label>
+                <input type="email" id="owner-email" name="owner-email">
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Сохранить</button>
+                <a href="#patients" class="btn btn-secondary">Отмена</a>
+            </div>
+        </form>
+    </section>
+
+    <section id="edit-patient" class="page-section">
+        <h2>Редактирование пациента</h2>
+        <p class="description">Link to patients list after save.</p>
+        <form class="data-form" id="edit-patient-form" onsubmit="saveEditPatient(event)">
+            <input type="hidden" id="edit-index">
+            <div class="form-group">
+                <label for="edit-pet-name">Кличка:</label>
+                <input type="text" id="edit-pet-name" name="pet-name" required>
+            </div>
+            <div class="form-group">
+                <label for="edit-pet-type">Вид:</label>
+                <select id="edit-pet-type" name="pet-type" required>
+                    <option value="Кошка">Кошка</option>
+                    <option value="Собака">Собака</option>
+                    <option value="Птица">Птица</option>
+                    <option value="Другое">Другое</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="edit-pet-breed">Порода:</label>
+                <input type="text" id="edit-pet-breed" name="pet-breed">
+            </div>
+            <div class="form-group">
+                <label for="edit-pet-birth">Дата рождения:</label>
+                <input type="date" id="edit-pet-birth" name="pet-birth">
+            </div>
+            <div class="form-group">
+                <label for="edit-owner-name">Владелец (ФИО):</label>
+                <input type="text" id="edit-owner-name" name="owner-name" required>
+            </div>
+            <div class="form-group">
+                <label for="edit-owner-phone">Телефон владельца:</label>
+                <input type="tel" id="edit-owner-phone" name="owner-phone" required>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Обновить</button>
+                <a href="#patients" class="btn btn-secondary">Отмена</a>
+            </div>
+        </form>
+    </section>
+
+    <section id="appointments" class="page-section">
+        <h2>Записи на прием</h2>
+        <div class="search-form">
+            <label for="app-date">Дата:</label>
+            <input type="date" id="app-date" class="search-input">
+            <label for="app-doctor">Врач:</label>
+            <select id="app-doctor" class="filter-select">
+                <option value="">Все врачи</option>
+                <option value="1">Петров П.П. (Терапевт)</option>
+                <option value="2">Смирнова А.А. (Хирург)</option>
+            </select>
+            <button type="button" class="btn">Фильтровать</button>
+        </div>
+        <div class="data-list" id="appointments-list">
+            <article class="list-item">
+                <div class="item-info">
+                    <h4>15.11.2026, 10:00 - Барсик (Иванов И.И.)</h4>
+                    <p>Врач: Петров П.П. | Услуга: Осмотр</p>
+                    <p>Статус: Запланирован</p>
+                </div>
+                <div class="item-actions">
+                    <button type="button" class="btn btn-danger btn-small" onclick="deleteAppointment(this)">Отменить</button>
+                </div>
+            </article>
+            <article class="list-item">
+                <div class="item-info">
+                    <h4>15.11.2026, 11:30 - Шарик (Петров П.П.)</h4>
+                    <p>Врач: Смирнова А.А. | Услуга: Вакцинация</p>
+                    <p>Статус: Запланирован</p>
+                </div>
+                <div class="item-actions">
+                    <button type="button" class="btn btn-danger btn-small" onclick="deleteAppointment(this)">Отменить</button>
+                </div>
+            </article>
+        </div>
+        <a href="#add-appointment" class="btn btn-primary">+ Новая запись</a>
+    </section>
+
+    <section id="add-appointment" class="page-section">
+        <h2>Новая запись на прием</h2>
+        <form class="data-form" id="add-appointment-form" onsubmit="addAppointment(event)">
+            <div class="form-group">
+                <label for="app-patient">Пациент:</label>
+                <select id="app-patient" name="patient" required>
+                    <option value="">Выберите пациента</option>
+                    <option value="Барсик">Барсик (Иванов И.И.)</option>
+                    <option value="Шарик">Шарик (Петров П.П.)</option>
+                    <option value="Кеша">Кеша (Сидоров С.С.)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="app-doctor-new">Врач:</label>
+                <select id="app-doctor-new" name="doctor" required>
+                    <option value="">Выберите врача</option>
+                    <option value="Петров П.П.">Петров П.П. (Терапевт)</option>
+                    <option value="Смирнова А.А.">Смирнова А.А. (Хирург)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="app-date-new">Дата:</label>
+                <input type="date" id="app-date-new" name="date" required>
+            </div>
+            <div class="form-group">
+                <label for="app-time">Время:</label>
+                <input type="time" id="app-time" name="time" required>
+            </div>
+            <div class="form-group">
+                <label for="app-service">Услуга:</label>
+                <select id="app-service" name="service" required>
+                    <option value="">Выберите услугу</option>
+                    <option value="Осмотр">Осмотр</option>
+                    <option value="Вакцинация">Вакцинация</option>
+                    <option value="Операция">Операция</option>
+                </select>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Записать</button>
+                <a href="#appointments" class="btn btn-secondary">Отмена</a>
+            </div>
+        </form>
+    </section>
+
+    <section id="services" class="page-section">
+        <h2>Список услуг</h2>
+        <div class="search-form">
+            <label for="service-search">Поиск:</label>
+            <input type="text" id="service-search" placeholder="Название услуги..." class="search-input">
+            <label for="service-cat">Категория:</label>
+            <select id="service-cat" class="filter-select">
+                <option value="">Все категории</option>
+                <option value="exam">Осмотры</option>
+                <option value="vaccine">Вакцинация</option>
+                <option value="surgery">Операции</option>
+            </select>
+            <button type="button" class="btn">Найти</button>
+        </div>
+        <div class="data-list" id="services-list">
+            <article class="list-item">
+                <div class="item-info">
+                    <h4>Первичный осмотр</h4>
+                    <p>Категория: Осмотры | Стоимость: 1500 руб. | Длительность: 30 мин</p>
+                </div>
+                <div class="item-actions">
+                    <button type="button" class="btn btn-danger btn-small" onclick="deleteService(this)">Удалить</button>
+                </div>
+            </article>
+            <article class="list-item">
+                <div class="item-info">
+                    <h4>Вакцинация комплексная</h4>
+                    <p>Категория: Вакцинация | Стоимость: 2500 руб. | Длительность: 20 мин</p>
+                </div>
+                <div class="item-actions">
+                    <button type="button" class="btn btn-danger btn-small" onclick="deleteService(this)">Удалить</button>
+                </div>
+            </article>
+        </div>
+        <a href="#add-service" class="btn btn-primary">+ Добавить услугу</a>
+    </section>
+
+    <section id="add-service" class="page-section">
+        <h2>Добавление новой услуги</h2>
+        <form class="data-form" id="add-service-form" onsubmit="addService(event)">
+            <div class="form-group">
+                <label for="service-name">Название услуги:</label>
+                <input type="text" id="service-name" name="service-name" required>
+            </div>
+            <div class="form-group">
+                <label for="service-category">Категория:</label>
+                <select id="service-category" name="service-category" required>
+                    <option value="">Выберите категорию</option>
+                    <option value="Осмотры">Осмотры</option>
+                    <option value="Вакцинация">Вакцинация</option>
+                    <option value="Операции">Операции</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="service-price">Стоимость (руб.):</label>
+                <input type="number" id="service-price" name="service-price" required>
+            </div>
+            <div class="form-group">
+                <label for="service-duration">Длительность (мин):</label>
+                <input type="number" id="service-duration" name="service-duration" required>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Добавить</button>
+                <a href="#services" class="btn btn-secondary">Отмена</a>
+            </div>
+        </form>
+    </section>
+
+    <section id="reports" class="page-section">
+        <h2>Отчеты</h2>
+        <div class="dashboard">
+            <div class="dashboard-card">
+                <h3>📊 График работы ветеринаров</h3>
+                <p>Недельное расписание всех врачей</p>
+                <button type="button" class="btn">Сформировать</button>
+            </div>
+            <div class="dashboard-card">
+                <h3>📋 Перечень услуг пациента</h3>
+                <p>Услуги и рецепты за период</p>
+                <button type="button" class="btn">Сформировать</button>
+            </div>
+            <div class="dashboard-card">
+                <h3>💰 Счет на оплату</h3>
+                <p>Формирование счета для клиента</p>
+                <button type="button" class="btn">Сформировать</button>
+            </div>
+        </div>
+    </section>
+
+    <section id="admin" class="page-section">
+        <h2>Управление пользователями (Администратор)</h2>
+        <div class="search-form">
+            <label for="user-search">Поиск пользователя:</label>
+            <input type="text" id="user-search" class="search-input">
+            <button type="button" class="btn">Найти</button>
+        </div>
+        <div class="data-list" id="users-list">
+            <article class="list-item">
+                <div class="item-info">
+                    <h4>Иванов И.И. (Клиент)</h4>
+                    <p>Логин: ivanov | Роль: Клиент | Статус: Активен</p>
+                </div>
+                <div class="item-actions">
+                    <button type="button" class="btn btn-danger btn-small" onclick="deleteUser(this)">Удалить</button>
+                </div>
+            </article>
+            <article class="list-item">
+                <div class="item-info">
+                    <h4>Петров П.П. (Ветеринар)</h4>
+                    <p>Логин: petrov | Роль: Врач | Статус: Активен</p>
+                </div>
+                <div class="item-actions">
+                    <button type="button" class="btn btn-danger btn-small" onclick="deleteUser(this)">Удалить</button>
+                </div>
+            </article>
+        </div>
+        <a href="#add-user" class="btn btn-primary">+ Добавить пользователя</a>
+    </section>
+
+    <section id="add-user" class="page-section">
+        <h2>Добавление нового пользователя</h2>
+        <form class="data-form" id="add-user-form" onsubmit="addUser(event)">
+            <div class="form-group">
+                <label for="user-fio">ФИО:</label>
+                <input type="text" id="user-fio" name="user-fio" required>
+            </div>
+            <div class="form-group">
+                <label for="user-login">Логин:</label>
+                <input type="text" id="user-login" name="user-login" required>
+            </div>
+            <div class="form-group">
+                <label for="user-password">Пароль:</label>
+                <input type="password" id="user-password" name="user-password" required>
+            </div>
+            <div class="form-group">
+                <label for="user-role">Роль:</label>
+                <select id="user-role" name="user-role" required>
+                    <option value="">Выберите роль</option>
+                    <option value="Клиент">Клиент</option>
+                    <option value="Ветеринар">Ветеринар</option>
+                    <option value="Регистратор">Регистратор</option>
+                    <option value="Администратор">Администратор</option>
+                </select>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Добавить</button>
+                <a href="#admin" class="btn btn-secondary">Отмена</a>
+            </div>
+        </form>
+    </section>
+
+    <section id="login" class="page-section">
+        <h2>Вход в систему</h2>
+        <p class="description">Link to home page after successful login. Sign In button connects to main dashboard.</p>
+        <form class="login-form" onsubmit="login(event)">
+            <div class="form-group">
+                <label for="login-username">Логин:</label>
+                <input type="text" id="login-username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="login-password">Пароль:</label>
+                <input type="password" id="login-password" name="password" required>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Войти</button>
+                <a href="#home" class="btn btn-secondary">Отмена</a>
+            </div>
+        </form>
+    </section>
+
+    <section id="error" class="page-section">
+        <div class="error-container">
+            <h2>⚠️ Ошибка 404</h2>
+            <p>Запрашиваемая страница не найдена.</p>
+            <p>Возможно, она была удалена или перемещена.</p>
+            <a href="#home" class="btn btn-primary">Вернуться на главную</a>
+        </div>
+    </section>
+
+</main>
+
+<footer class="footer">
+    <div class="footer-content">
+        <p>© 2026 АИС Ветклиника. Все права защищены.</p>
+        <p>Контакты: +7 (800) 555-35-35 | info@vetclinic.ru</p>
+        <p>Адрес: г. Москва, ул. Veterinary, д. 1</p>
+    </div>
+</footer>
+
+<script>
+    function updateCounts() {
+        const patients = document.querySelectorAll('#patients-list .list-item').length;
+        const appointments = document.querySelectorAll('#appointments-list .list-item').length;
+        document.getElementById('patients-count').textContent = 'Всего пациентов: ' + patients;
+        document.getElementById('appointments-count').textContent = 'Записей: ' + appointments;
+    }
+
+    function formatDate(dateStr) {
+        if (!dateStr) return '';
+        const parts = dateStr.split('-');
+        if (parts.length === 3) return parts[2] + '.' + parts[1] + '.' + parts[0];
+        return dateStr;
+    }
+
+    function addPatient(event) {
+        event.preventDefault();
+        const name = document.getElementById('pet-name').value;
+        const type = document.getElementById('pet-type').value;
+        const breed = document.getElementById('pet-breed').value;
+        const birth = document.getElementById('pet-birth').value;
+        const owner = document.getElementById('owner-name').value;
+        const phone = document.getElementById('owner-phone').value;
+
+        const article = document.createElement('article');
+        article.className = 'list-item';
+        article.setAttribute('data-name', name);
+        article.setAttribute('data-type', type);
+        article.setAttribute('data-birth', birth);
+        article.setAttribute('data-owner', owner);
+        article.innerHTML = `
+            <div class="item-info">
+                <h4>${name}</h4>
+                <p>Вид: ${type} | Порода: ${breed} | Дата рождения: ${formatDate(birth)}</p>
+                <p>Владелец: ${owner} | Телефон: ${phone}</p>
+            </div>
+            <div class="item-actions">
+                <button type="button" class="btn btn-small" onclick="editPatient(this)">Редактировать</button>
+                <button type="button" class="btn btn-danger btn-small" onclick="deletePatient(this)">Удалить</button>
+            </div>
+        `;
+        document.getElementById('patients-list').appendChild(article);
+        document.getElementById('add-patient-form').reset();
+        updateCounts();
+        alert('Пациент "' + name + '" успешно добавлен!');
+        window.location.hash = '#patients';
+    }
+
+    function deletePatient(button) {
+        if (confirm('Вы уверены, что хотите удалить этого пациента?')) {
+            const item = button.closest('.list-item');
+            const name = item.querySelector('h4').textContent;
+            item.remove();
+            updateCounts();
+            alert('Пациент "' + name + '" удалён.');
+        }
+    }
+
+    function editPatient(button) {
+        const item = button.closest('.list-item');
+        const info = item.querySelector('.item-info');
+        const lines = info.querySelectorAll('p');
+        
+        const name = item.querySelector('h4').textContent;
+        const typeMatch = lines[0].textContent.match(/Вид: ([^|]+)/);
+        const breedMatch = lines[0].textContent.match(/Порода: ([^|]+)/);
+        const birthMatch = lines[0].textContent.match(/Дата рождения: (\d{2}\.\d{2}\.\d{4})/);
+        const ownerMatch = lines[1].textContent.match(/Владелец: ([^|]+)/);
+        const phoneMatch = lines[1].textContent.match(/Телефон: (.+)/);
+
+        document.getElementById('edit-pet-name').value = name;
+        document.getElementById('edit-pet-type').value = typeMatch ? typeMatch[1].trim() : '';
+        document.getElementById('edit-pet-breed').value = breedMatch ? breedMatch[1].trim() : '';
+        if (birthMatch) {
+            const parts = birthMatch[1].split('.');
+            document.getElementById('edit-pet-birth').value = parts[2] + '-' + parts[1] + '-' + parts[0];
+        }
+        document.getElementById('edit-owner-name').value = ownerMatch ? ownerMatch[1].trim() : '';
+        document.getElementById('edit-owner-phone').value = phoneMatch ? phoneMatch[1].trim() : '';
+        
+        item.dataset.editIndex = Array.from(item.parentNode.children).indexOf(item);
+        window.location.hash = '#edit-patient';
+    }
+
+    function saveEditPatient(event) {
+        event.preventDefault();
+        const name = document.getElementById('edit-pet-name').value;
+        const type = document.getElementById('edit-pet-type').value;
+        const breed = document.getElementById('edit-pet-breed').value;
+        const birth = document.getElementById('edit-pet-birth').value;
+        const owner = document.getElementById('edit-owner-name').value;
+        const phone = document.getElementById('edit-owner-phone').value;
+
+        const items = document.querySelectorAll('#patients-list .list-item');
+        let targetItem = null;
+        items.forEach(item => {
+            if (item.querySelector('h4').textContent === name || 
+                item.getAttribute('data-name') === name) {
+                targetItem = item;
+            }
+        });
+
+        if (targetItem) {
+            targetItem.setAttribute('data-name', name);
+            targetItem.setAttribute('data-type', type);
+            targetItem.setAttribute('data-birth', birth);
+            targetItem.setAttribute('data-owner', owner);
+            targetItem.querySelector('h4').textContent = name;
+            targetItem.querySelector('.item-info').innerHTML = `
+                <h4>${name}</h4>
+                <p>Вид: ${type} | Порода: ${breed} | Дата рождения: ${formatDate(birth)}</p>
+                <p>Владелец: ${owner} | Телефон: ${phone}</p>
+            `;
+            alert('Данные пациента "' + name + '" обновлены!');
+        }
+        window.location.hash = '#patients';
+    }
+
+    function filterPatients() {
+        const search = document.getElementById('search').value.toLowerCase();
+        const filter = document.getElementById('filter').value;
+        const items = document.querySelectorAll('#patients-list .list-item');
+        
+        items.forEach(item => {
+            const name = item.getAttribute('data-name').toLowerCase();
+            const type = item.getAttribute('data-type');
+            const matchSearch = name.includes(search);
+            const matchFilter = !filter || type === filter;
+            item.style.display = (matchSearch && matchFilter) ? '' : 'none';
+        });
+    }
+
+    function resetFilter() {
+        document.getElementById('search').value = '';
+        document.getElementById('filter').value = '';
+        const items = document.querySelectorAll('#patients-list .list-item');
+        items.forEach(item => item.style.display = '');
+    }
+
+    function sortPatients(field) {
+        const list = document.getElementById('patients-list');
+        const items = Array.from(list.querySelectorAll('.list-item'));
+        
+        items.sort((a, b) => {
+            const valA = a.getAttribute('data-' + field).toLowerCase();
+            const valB = b.getAttribute('data-' + field).toLowerCase();
+            return valA.localeCompare(valB);
+        });
+        
+        items.forEach(item => list.appendChild(item));
+    }
+
+    function addAppointment(event) {
+        event.preventDefault();
+        const patient = document.getElementById('app-patient').value;
+        const doctor = document.getElementById('app-doctor-new').value;
+        const date = document.getElementById('app-date-new').value;
+        const time = document.getElementById('app-time').value;
+        const service = document.getElementById('app-service').value;
+
+        const article = document.createElement('article');
+        article.className = 'list-item';
+        article.innerHTML = `
+            <div class="item-info">
+                <h4>${formatDate(date)}, ${time} - ${patient}</h4>
+                <p>Врач: ${doctor} | Услуга: ${service}</p>
+                <p>Статус: Запланирован</p>
+            </div>
+            <div class="item-actions">
+                <button type="button" class="btn btn-danger btn-small" onclick="deleteAppointment(this)">Отменить</button>
+            </div>
+        `;
+        document.getElementById('appointments-list').appendChild(article);
+        document.getElementById('add-appointment-form').reset();
+        updateCounts();
+        alert('Запись создана!');
+        window.location.hash = '#appointments';
+    }
+
+    function deleteAppointment(button) {
+        if (confirm('Отменить эту запись?')) {
+            button.closest('.list-item').remove();
+            updateCounts();
+        }
+    }
+
+    function addService(event) {
+        event.preventDefault();
+        const name = document.getElementById('service-name').value;
+        const category = document.getElementById('service-category').value;
+        const price = document.getElementById('service-price').value;
+        const duration = document.getElementById('service-duration').value;
+
+        const article = document.createElement('article');
+        article.className = 'list-item';
+        article.innerHTML = `
+            <div class="item-info">
+                <h4>${name}</h4>
+                <p>Категория: ${category} | Стоимость: ${price} руб. | Длительность: ${duration} мин</p>
+            </div>
+            <div class="item-actions">
+                <button type="button" class="btn btn-danger btn-small" onclick="deleteService(this)">Удалить</button>
+            </div>
+        `;
+        document.getElementById('services-list').appendChild(article);
+        document.getElementById('add-service-form').reset();
+        alert('Услуга "' + name + '" добавлена!');
+        window.location.hash = '#services';
+    }
+
+    function deleteService(button) {
+        if (confirm('Удалить эту услугу?')) {
+            button.closest('.list-item').remove();
+        }
+    }
+
+    function addUser(event) {
+        event.preventDefault();
+        const fio = document.getElementById('user-fio').value;
+        const login = document.getElementById('user-login').value;
+        const role = document.getElementById('user-role').value;
+
+        const article = document.createElement('article');
+        article.className = 'list-item';
+        article.innerHTML = `
+            <div class="item-info">
+                <h4>${fio} (${role})</h4>
+                <p>Логин: ${login} | Роль: ${role} | Статус: Активен</p>
+            </div>
+            <div class="item-actions">
+                <button type="button" class="btn btn-danger btn-small" onclick="deleteUser(this)">Удалить</button>
+            </div>
+        `;
+        document.getElementById('users-list').appendChild(article);
+        document.getElementById('add-user-form').reset();
+        alert('Пользователь "' + fio + '" добавлен!');
+        window.location.hash = '#admin';
+    }
+
+    function deleteUser(button) {
+        if (confirm('Удалить этого пользователя?')) {
+            button.closest('.list-item').remove();
+        }
+    }
+
+    function login(event) {
+        event.preventDefault();
+        alert('Вход выполнен успешно! Добро пожаловать в систему.');
+        window.location.hash = '#home';
+    }
+</script>
+
+</body>
+</html>
